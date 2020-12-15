@@ -1,0 +1,1 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/tiut1bdoy4vlkngo?svg=true)](https://ci.appveyor.com/project/Tatiana-Brener/task3-ui-selenium-and-selenide)
