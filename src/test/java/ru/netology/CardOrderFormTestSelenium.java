@@ -1,5 +1,6 @@
 package ru.netology;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,20 +15,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class CardOrderFormTestSelenium {
 
     private WebDriver driver;
-
+    static ChromeOptions options;
 
     @BeforeAll
     static void setUpAll() {
-        System.setProperty("webdriver.chrome.driver", "driver/mac/chromedriver");
-
-        ChromeOptions options = new ChromeOptions();
-        options.setBinary("driver/mac/chromedriver");
-        options.addArguments("--headless");
+        WebDriverManager.chromedriver().setup();
     }
 
     @BeforeEach
     void setUp() {
-        driver = new ChromeDriver();
+//        driver = new ChromeDriver();
+        driver = new ChromeDriver(options);
+        options = new ChromeOptions();
+        options.addArguments("--headless");
+
     }
 
     @AfterEach
@@ -39,7 +40,7 @@ public class CardOrderFormTestSelenium {
     @Test
     void shouldSubmitRequestIfFieldsAreFilledCorrect() {
         driver.get("http://localhost:9999");
-        driver.findElement(By.cssSelector("[type='text']")).sendKeys("Татьяна");
+        driver.findElement(By.cssSelector("[type='text']")).sendKeys("Татьяна Бурматова");
         driver.findElement(By.cssSelector("[type='tel']")).sendKeys("+79990000000");
         driver.findElement(By.cssSelector("[class='checkbox__text']")).click();
         driver.findElement(By.cssSelector("[type='button']")).click();
@@ -56,7 +57,7 @@ public class CardOrderFormTestSelenium {
         driver.findElement(By.cssSelector("[class='checkbox__text']")).click();
         driver.findElement(By.cssSelector("[type='button']")).click();
 
-        String actualMassage = driver.findElement(By.cssSelector("[class='input__sub']")).getText();
+        String actualMassage = driver.findElement(By.cssSelector(".input_type_text .input__sub")).getText();
         assertEquals("Поле обязательно для заполнения", actualMassage.trim());
     }
 
@@ -68,44 +69,44 @@ public class CardOrderFormTestSelenium {
         driver.findElement(By.cssSelector("[class='checkbox__text']")).click();
         driver.findElement(By.cssSelector("[type='button']")).click();
 
-        String actualMassage = driver.findElement(By.cssSelector("[class='input__sub']")).getText();
+        String actualMassage = driver.findElement(By.cssSelector(".input_type_text .input__sub")).getText();
         assertEquals("Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы.", actualMassage.trim());
     }
 
+    @Test
+    void shouldNotSubmitRequestIfTelFieldIsEmpty() {
+        driver.get("http://localhost:9999");
+        driver.findElement(By.cssSelector("[type='text']")).sendKeys("Татьяна Бурматова");
+        driver.findElement(By.cssSelector("[type='tel']")).sendKeys("");
+        driver.findElement(By.cssSelector("[class='checkbox__text']")).click();
+        driver.findElement(By.cssSelector("[type='button']")).click();
+
+        String actualMassage = driver.findElement(By.cssSelector(".input_invalid .input__sub")).getText();
+        assertEquals("Поле обязательно для заполнения", actualMassage.trim());
+    }
+
+    @Test
+    void shouldNotSubmitRequestIfTelFieldIsInvalid() {
+        driver.get("http://localhost:9999");
+        driver.findElement(By.cssSelector("[type='text']")).sendKeys("Татьяна Бурматова");
+        driver.findElement(By.cssSelector("[type='tel']")).sendKeys("9374573");
+        driver.findElement(By.cssSelector("[class='checkbox__text']")).click();
+        driver.findElement(By.cssSelector("[type='button']")).click();
+
+        String actualMassage = driver.findElement(By.cssSelector(".input_invalid .input__sub")).getText();
+        assertEquals("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678.", actualMassage.trim());
+    }
+
 //    @Test
-//    void shouldNotSubmitRequestIfTextFieldIsInvalid2() {
+//    void shouldNotSubmitRequestIfCheckboxNotClick() {
 //        driver.get("http://localhost:9999");
-//        driver.findElement(By.cssSelector("[type='text']")).sendKeys("ывалоыр");
-//        driver.findElement(By.cssSelector("[type='tel']")).sendKeys("+79990000000");
-//        driver.findElement(By.cssSelector("[class='checkbox__text']")).click();
-//        driver.findElement(By.cssSelector("[type='button']")).click();
-//
-//        String actualMassage = driver.findElement(By.cssSelector("span[class='input__sub']")).getText();
-//        assertEquals("Укажите точно как в паспорте", actualMassage.trim());
-//    }
-//
-//    @Test
-//    void shouldNotSubmitRequestIfTelFieldIsEmpty() {
-//        driver.get("http://localhost:9999");
-//        driver.findElement(By.cssSelector("[type='text']")).sendKeys("Татьяна");
+//        driver.findElement(By.cssSelector("[type='text']")).sendKeys("Татьяна Бурматова");
 //        driver.findElement(By.cssSelector("[type='tel']")).sendKeys("");
-//        driver.findElement(By.cssSelector("[class='checkbox__text']")).click();
+//        driver.findElement(By.cssSelector("[class='checkbox__text']"));
 //        driver.findElement(By.cssSelector("[type='button']")).click();
 //
-//        String actualMassage = driver.findElement(By.cssSelector("[class='input__sub']")).getText();
-//        assertEquals("Поле обязательно для заполнения", actualMassage.trim());
-//    }
-//
-//    @Test
-//    void shouldNotSubmitRequestIfiTelFieldIsInvalid() {
-//        driver.get("http://localhost:9999");
-//        driver.findElement(By.cssSelector("[type='text']")).sendKeys("Татьяна");
-//        driver.findElement(By.cssSelector("[type='tel']")).sendKeys("764758");
-//        driver.findElement(By.cssSelector("[class='checkbox__text']")).click();
-//        driver.findElement(By.cssSelector("[type='button']")).click();
-//
-//        String actualMassage = driver.findElement(By.cssSelector("[class='input__sub']")).getText();
-//        assertEquals("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678.", actualMassage.trim());
+//        String actualMassage = driver.findElement(By.cssSelector(".checkbox .checkbox__text")).getCssValue(".input_invalid");
+//        assertEquals(".input_invalid", actualMassage.trim());
 //    }
 
 }
