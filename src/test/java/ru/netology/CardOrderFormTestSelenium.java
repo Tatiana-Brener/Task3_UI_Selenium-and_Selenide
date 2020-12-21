@@ -1,6 +1,7 @@
 package ru.netology;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
+import io.github.bonigarcia.wdm.config.OperatingSystem;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +16,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class CardOrderFormTestSelenium {
 
     private WebDriver driver;
-    static ChromeOptions options;
+//    static ChromeOptions options;
+//    private OperatingSystem operatingSystem;
+
+//    public CardOrderFormTestSelenium(OperatingSystem operatingSystem) {
+//        this.operatingSystem = operatingSystem;
+//        setOperatingSystem(OperatingSystem.LINUX);
+//        setOperatingSystem(OperatingSystem.MAC);
+//    }
 
     @BeforeAll
     static void setUpAll() {
@@ -24,17 +32,20 @@ public class CardOrderFormTestSelenium {
 
     @BeforeEach
     void setUp() {
-//        driver = new ChromeDriver();
-        driver = new ChromeDriver(options);
-        options = new ChromeOptions();
-        options.addArguments("--headless");
-
+        driver = new ChromeDriver();
+//        driver = new ChromeDriver(options);
+//        options = new ChromeOptions();
+//        options.addArguments("--headless");
+//        operatingSystem.matchOs("linux");
     }
 
     @AfterEach
     void tearDown() {
-        driver.quit();
-        driver = null;
+//        driver.quit();
+//        driver = null;
+        if(driver !=null) {
+            driver.quit();
+        }
     }
 
     @Test
@@ -96,6 +107,14 @@ public class CardOrderFormTestSelenium {
         String actualMassage = driver.findElement(By.cssSelector(".input_invalid .input__sub")).getText();
         assertEquals("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678.", actualMassage.trim());
     }
+
+//    public OperatingSystem getOperatingSystem() {
+//        return operatingSystem;
+//    }
+//
+//    public void setOperatingSystem(OperatingSystem operatingSystem) {
+//        this.operatingSystem = operatingSystem;
+//    }
 
 //    @Test
 //    void shouldNotSubmitRequestIfCheckboxNotClick() {
