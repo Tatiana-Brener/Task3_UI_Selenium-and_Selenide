@@ -1,7 +1,6 @@
 package ru.netology;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
-import io.github.bonigarcia.wdm.config.OperatingSystem;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,34 +14,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CardOrderFormTestSelenium {
 
+    private static ChromeOptions options;
     private WebDriver driver;
-//    static ChromeOptions options;
-//    private OperatingSystem operatingSystem;
-
-//    public CardOrderFormTestSelenium(OperatingSystem operatingSystem) {
-//        this.operatingSystem = operatingSystem;
-//        setOperatingSystem(OperatingSystem.LINUX);
-//        setOperatingSystem(OperatingSystem.MAC);
-//    }
 
     @BeforeAll
     static void setUpAll() {
         WebDriverManager.chromedriver().setup();
+        options = new ChromeOptions();
+        options.addArguments("--headless");
     }
 
     @BeforeEach
     void setUp() {
-        driver = new ChromeDriver();
-//        driver = new ChromeDriver(options);
-//        options = new ChromeOptions();
-//        options.addArguments("--headless");
-//        operatingSystem.matchOs("linux");
+        driver = new ChromeDriver(options);
     }
 
     @AfterEach
     void tearDown() {
-//        driver.quit();
-//        driver = null;
         if(driver !=null) {
             driver.quit();
         }
@@ -108,24 +96,17 @@ public class CardOrderFormTestSelenium {
         assertEquals("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678.", actualMassage.trim());
     }
 
-//    public OperatingSystem getOperatingSystem() {
-//        return operatingSystem;
-//    }
-//
-//    public void setOperatingSystem(OperatingSystem operatingSystem) {
-//        this.operatingSystem = operatingSystem;
-//    }
+    @Test
+    void shouldNotSubmitRequestIfCheckboxNotClick() {
+        driver.get("http://localhost:9999");
+        driver.findElement(By.cssSelector("[type='text']")).sendKeys("Татьяна Бурматова");
+        driver.findElement(By.cssSelector("[type='tel']")).sendKeys("+79990000000");
+        driver.findElement(By.cssSelector("[class='checkbox__text']"));
+        driver.findElement(By.cssSelector("[type='button']")).click();
 
-//    @Test
-//    void shouldNotSubmitRequestIfCheckboxNotClick() {
-//        driver.get("http://localhost:9999");
-//        driver.findElement(By.cssSelector("[type='text']")).sendKeys("Татьяна Бурматова");
-//        driver.findElement(By.cssSelector("[type='tel']")).sendKeys("");
-//        driver.findElement(By.cssSelector("[class='checkbox__text']"));
-//        driver.findElement(By.cssSelector("[type='button']")).click();
-//
-//        String actualMassage = driver.findElement(By.cssSelector(".checkbox .checkbox__text")).getCssValue(".input_invalid");
-//        assertEquals(".input_invalid", actualMassage.trim());
-//    }
+        String actualMassage = driver.findElement(By.cssSelector("[data-test-id='agreement'].input_invalid .checkbox__text")).getText();
+        String expectedMessage = "Я соглашаюсь с условиями обработки и использования моих персональных данных и разрешаю сделать запрос в бюро кредитных историй";
+        assertEquals(expectedMessage, actualMassage.trim());
+    }
 
 }
